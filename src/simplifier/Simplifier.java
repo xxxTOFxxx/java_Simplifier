@@ -68,7 +68,7 @@ public class Simplifier {
         if (usernameOrEmail.equals("CCT") && password.equals("Dublin")) {
             // Admin login
             Admin admin = new Admin(usernameOrEmail);
-            admin.showAdminMenu();
+            admin.showAdminMenu(scanner);
         } else {
             // Regular user login
             RUser regularUser = UserDatabase.getUserByEmailAndPassword(usernameOrEmail, password);
@@ -79,6 +79,5 @@ public class Simplifier {
             }
         }
     }
-
-    
 }
+

@@ -65,7 +65,7 @@ class UserDatabase {
             preparedStatement.executeUpdate();
         }
     } catch (SQLException e) {
-        // Print stack trace in case of a database error
+        // Print stack trace in case of a database error...
         e.printStackTrace();
     }
 }

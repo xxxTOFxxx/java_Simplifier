@@ -53,7 +53,7 @@ public class Simplifier {
     }
 
     /**
-     * Handles the login process for both regular users and admin.
+     * Handles the login process for both regular users and admin...
      *
      * @param scanner Scanner object for user input
      */

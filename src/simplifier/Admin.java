@@ -1,3 +1,4 @@
+
 package simplifier;
 
 /**
@@ -14,4 +15,3 @@ class Admin extends User {
         // Implement specific options for the Admin
     }
 }
-

@@ -53,7 +53,7 @@ public class Simplifier {
     }
 
     /**
-     * Handles the login process for both regular users and admin...
+     * Handles the login process for both regular users and admin.
      *
      * @param scanner Scanner object for user input
      */
@@ -68,7 +68,7 @@ public class Simplifier {
         if (usernameOrEmail.equals("CCT") && password.equals("Dublin")) {
             // Admin login
             Admin admin = new Admin(usernameOrEmail);
-            admin.showAdminMenu(scanner);
+            admin.showAdminMenu();
         } else {
             // Regular user login
             RUser regularUser = UserDatabase.getUserByEmailAndPassword(usernameOrEmail, password);
@@ -79,5 +79,6 @@ public class Simplifier {
             }
         }
     }
-}
 
+    
+}

@@ -65,7 +65,7 @@ class UserDatabase {
             preparedStatement.executeUpdate();
         }
     } catch (SQLException e) {
-        // Print stack trace in case of a database error...
+        // Print stack trace in case of a database error
         e.printStackTrace();
     }
 }
@@ -76,4 +76,3 @@ class UserDatabase {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
-

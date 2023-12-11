@@ -16,4 +16,3 @@ class RUser extends User {
     }
 }
 
-

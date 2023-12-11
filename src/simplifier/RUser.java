@@ -14,5 +14,6 @@ class RUser extends User {
         System.out.println("Welcome, User! Available options:");
         // Implement specific options for the Regular User
     }
+    
 }
 

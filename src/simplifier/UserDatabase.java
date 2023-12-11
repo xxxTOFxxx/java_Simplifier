@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 /**
  * Represents a database interaction class for user-related operations.
@@ -68,11 +69,39 @@ class UserDatabase {
         // Print stack trace in case of a database error
         e.printStackTrace();
     }
+    
 }
 
     
 
-    static RUser getUserByEmailAndPassword(String usernameOrEmail, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static RUser getUserByEmailAndPassword(String email, String password) {
+    try (Connection connection = connect()) {
+        // SQL query to select user data from the 'user' table based on email and password
+        String query = "SELECT * FROM user WHERE email = ? AND password = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            // Set values for the placeholders in the SQL query
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+
+            // Execute the SQL query
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Check if a user was found
+            if (resultSet.next()) {
+                // Create and return a user object
+                return new RUser(
+                        resultSet.getString("full_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("password"));  // Adjust this accordingly
+            }
+        }
+    } catch (SQLException e) {
+        // Print stack trace in case of a database error
+        e.printStackTrace();
     }
+
+    // Return null if no user is found
+    return null;
+}
 }

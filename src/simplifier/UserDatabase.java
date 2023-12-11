@@ -17,91 +17,64 @@ import java.sql.ResultSet;
  * 
  * @author Tiago
  */
+
 class UserDatabase {
-    // Database connection details
     private static final String DB_URL = "jdbc:mysql://localhost:3306/java_simplifier_user_database";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
-    /**
-     * Establishes a connection to the database.
-     * 
-     * @return Connection object representing the database connection.
-     * @throws SQLException If a database access error occurs.
-     */
+    // Establishes a connection to the database
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
-    /**
-     * Closes the provided database connection.
-     * 
-     * @param connection Connection object to be closed.
-     * @throws SQLException If a database access error occurs.
-     */
+    // Closes the provided database connection
     public static void closeConnection(Connection connection) throws SQLException {
         if (connection != null) {
             connection.close();
         }
     }
 
-    /**
-     * Registers a user in the database.
-     * 
-     * @param user User object containing user details to be registered.
-     */
+    // Registers a user in the database
     public static void registerUser(User user) {
-    try (Connection connection = connect()) {
-        // SQL query to insert user data into the 'users' table
-        String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            System.out.println("SQL Query: " + preparedStatement.toString());
+        try (Connection connection = connect()) {
+            String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                System.out.println("SQL Query: " + preparedStatement.toString());
 
-            // Set values for the placeholders in the SQL query
-            preparedStatement.setString(1, user.getFullName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPassword());
+                preparedStatement.setString(1, user.getFullName());
+                preparedStatement.setString(2, user.getEmail());
+                preparedStatement.setString(3, user.getPassword());
 
-            // Execute the SQL update statement
-            preparedStatement.executeUpdate();
-        }
-    } catch (SQLException e) {
-        // Print stack trace in case of a database error
-        e.printStackTrace();
-    }
-    
-}
-
-    
-
-    public static RUser getUserByEmailAndPassword(String email, String password) {
-    try (Connection connection = connect()) {
-        // SQL query to select user data from the 'user' table based on email and password
-        String query = "SELECT * FROM user WHERE email = ? AND password = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // Set values for the placeholders in the SQL query
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
-
-            // Execute the SQL query
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            // Check if a user was found
-            if (resultSet.next()) {
-                // Create and return a user object
-                return new RUser(
-                        resultSet.getString("full_name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("password"));  // Adjust this accordingly
+                preparedStatement.executeUpdate();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        // Print stack trace in case of a database error
-        e.printStackTrace();
     }
 
-    // Return null if no user is found
-    return null;
-}
+    // Retrieves a user from the database based on email and password
+    public static RUser getUserByEmailAndPassword(String email, String password) {
+        try (Connection connection = connect()) {
+            String query = "SELECT * FROM user WHERE email = ? AND password = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, email);
+                preparedStatement.setString(2, password);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    return new RUser(
+                            resultSet.getString("full_name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getInt("user_id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

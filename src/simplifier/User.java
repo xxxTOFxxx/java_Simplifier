@@ -7,7 +7,7 @@ package simplifier;
  * @author Tiago
  */
 // Abstract class for user
-class User {
+abstract class User {
     private String fullName;
     private String email;
     private String password;
@@ -30,7 +30,7 @@ class User {
         return password;
     }
 
-    void showUserMenu() {
+    public void showUserMenu() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

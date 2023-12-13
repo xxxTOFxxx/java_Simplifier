@@ -19,6 +19,7 @@ import java.util.Scanner;
 
     public RUser(String fullName, String email, String password) {
         super(fullName, email, password);
+        this.scanner = new Scanner(System.in);
     }
 
     public RUser(String fullName, String email, String password, int age, String gender, String profession) {
@@ -54,7 +55,7 @@ import java.util.Scanner;
         this.profession = profession;
     }
 
-    // Additional methods...
+    
 
     public void setScanner(Scanner scanner) {
         this.scanner = scanner;
@@ -82,18 +83,18 @@ import java.util.Scanner;
 
     private void handleInputMismatch() {
         System.out.println("Invalid input. Please enter a valid number.");
-        scanner.nextLine(); // Consume the invalid input
+        scanner.nextLine(); 
     }
 
     public void initiateTaxCalculation() {
         System.out.println("Tax calculation initiated. Implement the logic here.");
     }
 
-    @Override
+    
     public void showUserMenu() {
-        super.showUserMenu();
-        System.out.println("3 - Edit Profile");
-        System.out.println("4 - Initiate Tax Calculation");
+        
+        System.out.println("3 - Editar Perfil");
+        System.out.println("4 - Iniciar Cálculo de Imposto");
 
         int choice;
         try {
@@ -107,10 +108,13 @@ import java.util.Scanner;
                     initiateTaxCalculation();
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Escolha inválida. Por favor, tente novamente.");
             }
         } catch (java.util.InputMismatchException e) {
             handleInputMismatch();
         }
     }
+    
 }
+
+

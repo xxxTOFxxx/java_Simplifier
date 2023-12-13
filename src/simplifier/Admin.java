@@ -32,7 +32,7 @@ class Admin extends User {
             } catch (NumberFormatException | InputMismatchException e) {
              System.out.println("Invalid input. Please enter a number.");
             scanner.nextLine(); // Consume the invalid input
-            continue; // Continue the loop if parsing fails
+            continue; 
         }
 
 

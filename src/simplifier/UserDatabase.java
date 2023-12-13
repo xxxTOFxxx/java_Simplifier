@@ -22,9 +22,11 @@ import java.util.Scanner;
  */
 
 class UserDatabase {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/java_simplifier_user_database";
+    private static final String DB_NAME = "java_simplifier_database";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + DB_NAME;
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
+
 
     // Simulated database connection method
     private static Connection connect() throws SQLException {

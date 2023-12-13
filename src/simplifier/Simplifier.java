@@ -45,24 +45,25 @@ public class Simplifier {
     }
 
     private static void loginUser(Scanner scanner) {
-        System.out.println("Login:");
+    System.out.println("Login:");
 
-        System.out.print("Enter your email: ");
-        String email = scanner.nextLine();
-        System.out.print("Enter your password: ");
-        String password = scanner.nextLine();
+    System.out.print("Digite seu email: ");
+    String email = scanner.nextLine();
+    System.out.print("Digite sua senha: ");
+    String password = scanner.nextLine();
 
-        if (email.equals("CCT") && password.equals("2023")) {
-            Admin admin = new Admin("Admin", email, password);
-            admin.showAdminMenu();
-        } else {
-            User regularUser = UserDatabase.getUserByEmailAndPassword(email, password);
-            if (regularUser != null) {
+    if (email.equals("CCT") && password.equals("2023")) {
+        Admin admin = new Admin("Admin", email, password);
+        admin.showAdminMenu();
+    } else {
+        User regularUser = UserDatabase.getUserByEmailAndPassword(email, password);
+        if (regularUser != null && regularUser instanceof RUser) {
             ((RUser) regularUser).showUserMenu();
         } else {
-            System.out.println("Login failed. Check your credentials.");
+            System.out.println("Login falhou. Verifique suas credenciais.");
         }
     }
+}
         }
-    }
+    
 

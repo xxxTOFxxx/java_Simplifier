@@ -1,7 +1,9 @@
 
 package simplifier;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
+
 
 
 
@@ -10,52 +12,32 @@ import java.util.Scanner;
  * @author Tiago
  */
  class RUser extends User {
-    private int age;
-    private String gender;
-    private String profession;
+    private double grossIncome;
+    private double taxCredits;
     private Scanner scanner;
-
-    // Constructors
 
     public RUser(String fullName, String email, String password) {
         super(fullName, email, password);
+        this.grossIncome = grossIncome;
+        this.taxCredits = taxCredits;
         this.scanner = new Scanner(System.in);
     }
 
-    public RUser(String fullName, String email, String password, int age, String gender, String profession) {
-        super(fullName, email, password);
-        this.age = age;
-        this.gender = gender;
-        this.profession = profession;
+    public double getGrossIncome() {
+        return grossIncome;
     }
 
-    // Getters and setters...
-
-    public int getAge() {
-        return age;
+    public void setGrossIncome(double grossIncome) {
+        this.grossIncome = grossIncome;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public double getTaxCredits() {
+        return taxCredits;
     }
 
-    public String getGender() {
-        return gender;
+    public void setTaxCredits(double taxCredits) {
+        this.taxCredits = taxCredits;
     }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getProfession() {
-        return profession;
-    }
-
-    public void setProfession(String profession) {
-        this.profession = profession;
-    }
-
-    
 
     public void setScanner(Scanner scanner) {
         this.scanner = scanner;
@@ -63,36 +45,34 @@ import java.util.Scanner;
 
     public void editProfile() {
         try {
-            System.out.print("Enter new age: ");
-            int newAge = scanner.nextInt();
-            if (newAge > 0) {
-                setAge(newAge);
+            System.out.print("Enter new gross income: ");
+            double newGrossIncome = scanner.nextDouble();
+            if (newGrossIncome > 0) {
+                setGrossIncome(newGrossIncome);
                 scanner.nextLine();
-                System.out.print("Enter new gender: ");
-                setGender(scanner.nextLine());
-                System.out.print("Enter new profession: ");
-                setProfession(scanner.nextLine());
+                System.out.print("Enter new tax credits: ");
+                setTaxCredits(scanner.nextDouble());
+                scanner.nextLine();
                 System.out.println("Profile updated successfully.");
             } else {
-                System.out.println("Invalid age. Please enter a positive number.");
+                System.out.println("Invalid gross income. Please enter a positive number.");
             }
-        } catch (java.util.InputMismatchException e) {
+        } catch (InputMismatchException e) {
             handleInputMismatch();
         }
     }
 
     private void handleInputMismatch() {
         System.out.println("Invalid input. Please enter a valid number.");
-        scanner.nextLine(); 
+        scanner.nextLine();
     }
 
     public void initiateTaxCalculation() {
-        System.out.println("Tax calculation initiated. Implement the logic here.");
+        System.out.println("Tax calculation initiated.");
+        new TaxCalculator(this);
     }
-
-    
-    public void showUserMenu() {
-        
+    @Override
+    public void showUserMenu(Scanner scanner1) {
         System.out.println("3 - Editar Perfil");
         System.out.println("4 - Iniciar Cálculo de Imposto");
 
@@ -105,16 +85,13 @@ import java.util.Scanner;
                     editProfile();
                     break;
                 case 4:
-                    initiateTaxCalculation();
-                    break;
-                default:
-                    System.out.println("Escolha inválida. Por favor, tente novamente.");
-            }
-        } catch (java.util.InputMismatchException e) {
-            handleInputMismatch();
+                initiateTaxCalculation();
+                break;
+            default:
+                System.out.println("Escolha inválida. Por favor, tente novamente.");
         }
+    } catch (InputMismatchException e) {
+        handleInputMismatch();
     }
-    
 }
-
-
+ }

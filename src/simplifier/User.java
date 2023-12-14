@@ -1,6 +1,8 @@
 
 package simplifier;
 
+import java.util.Scanner;
+
 
 /**
  *
@@ -30,7 +32,7 @@ abstract class User {
         return password;
     }
 
-    public void showUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void showUserMenu(Scanner scanner1) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

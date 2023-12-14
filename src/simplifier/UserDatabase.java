@@ -9,8 +9,8 @@ package simplifier;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,15 +27,13 @@ class UserDatabase {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
-
-    // Simulated database connection method
-    private static Connection connect() throws SQLException {
+    static Connection connect() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
-    public static void registerUser(User user) {
+    static void registerUser(RUser user) {
         try (Connection connection = connect()) {
-            String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)";
+            String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, user.getFullName());
                 statement.setString(2, user.getEmail());
@@ -46,6 +44,7 @@ class UserDatabase {
             handleSQLException(e);
         }
     }
+
 
     public static User getUserByEmailAndPassword(String email, String password) {
         try (Connection connection = connect()) {
@@ -175,11 +174,11 @@ class UserDatabase {
         }
     }
 
-    private static void handleSQLException(SQLException e) {
+    static void handleSQLException(SQLException e) {
         System.err.println("SQL Exception:");
         System.err.println("Error Message: " + e.getMessage());
         System.err.println("SQL State: " + e.getSQLState());
         System.err.println("Error Code: " + e.getErrorCode());
-        e.printStackTrace(); 
+        e.printStackTrace();
     }
 }

@@ -1,6 +1,7 @@
 package simplifier;
 
 import java.util.Scanner;
+import simplifier.UserDatabase;
 
 /**
  * This class provides a simple user registration and login system.
@@ -18,7 +19,7 @@ public class Simplifier {
             System.out.println("1 - Register");
             System.out.println("2 - Login");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline
+            scanner.nextLine(); 
 
             if (choice == 1) {
                 registerUser(scanner);
@@ -37,20 +38,22 @@ public class Simplifier {
         String email = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
+        System.out.print("Enter your gross income: ");
+        System.out.print("Enter your tax credits: ");
 
-        User regularUser = new RUser(fullName, email, password);
+        RUser regularUser = new RUser(fullName, email, password);
         UserDatabase.registerUser(regularUser);
 
         System.out.println("User successfully registered!");
     }
 
     private static void loginUser(Scanner scanner) {
-    System.out.println("Login:");
+        System.out.println("Login:");
 
-    System.out.print("Digite seu email: ");
-    String email = scanner.nextLine();
-    System.out.print("Digite sua senha: ");
-    String password = scanner.nextLine();
+        System.out.print("Digite seu email: ");
+        String email = scanner.nextLine();
+        System.out.print("Digite sua senha: ");
+        String password = scanner.nextLine();
 
     if (email.equals("CCT") && password.equals("2023")) {
         Admin admin = new Admin("Admin", email, password);
@@ -58,12 +61,15 @@ public class Simplifier {
     } else {
         User regularUser = UserDatabase.getUserByEmailAndPassword(email, password);
         if (regularUser != null && regularUser instanceof RUser) {
-            ((RUser) regularUser).showUserMenu();
+            RUser rUser = (RUser) regularUser;
+            rUser.showUserMenu(scanner);
         } else {
             System.out.println("Login falhou. Verifique suas credenciais.");
         }
     }
 }
-        }
+}
+    
+
     
 

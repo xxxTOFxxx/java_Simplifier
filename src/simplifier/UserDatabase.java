@@ -6,6 +6,8 @@
 
 package simplifier;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,17 +35,50 @@ class UserDatabase {
 
     static void registerUser(RUser user) {
         try (Connection connection = connect()) {
-            String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?, ?, ?)";
+            String hashedPassword = hashPassword(user.getPassword());
+            String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, user.getFullName());
                 statement.setString(2, user.getEmail());
-                statement.setString(3, user.getPassword());
+                statement.setString(3, hashedPassword);
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
             handleSQLException(e);
         }
     }
+
+    private static String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Failed to hash password", e);
+        }
+    }
+
+    public static boolean doesUserExist(String email) {
+    try (Connection connection = connect()) {
+        String query = "SELECT 1 FROM user WHERE email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next();
+            }
+        }
+    } catch (SQLException e) {
+        handleSQLException(e);
+    }
+    return false;
+    }
+    
 
 
     public static User getUserByEmailAndPassword(String email, String password) {

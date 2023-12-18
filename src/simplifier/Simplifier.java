@@ -10,25 +10,41 @@ import simplifier.UserDatabase;
  *
  * @author Tiago
  */
+
 public class Simplifier {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.println("Welcome to Simplifier!");
 
-            System.out.println("Choose an option:");
-            System.out.println("1 - Register");
-            System.out.println("2 - Login");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); 
+            int choice = getChoice(scanner);
 
-            if (choice == 1) {
-                registerUser(scanner);
-            } else if (choice == 2) {
-                loginUser(scanner);
+            switch (choice) {
+                case 1:
+                    registerUser(scanner);
+                    break;
+                case 2:
+                    loginUser(scanner);
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
             }
         }
     }
 
+    private static int getChoice(Scanner scanner) {
+        System.out.println("Choose an option:");
+        System.out.println("1 - Register");
+        System.out.println("2 - Login");
+        try {
+            return scanner.nextInt();
+        } catch (Exception e) {
+            scanner.nextLine(); // clear buffer
+            return -1;
+        }
+    }
+
+   
     private static void registerUser(Scanner scanner) {
         System.out.println("User Registration:");
 
@@ -38,8 +54,6 @@ public class Simplifier {
         String email = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
-        System.out.print("Enter your gross income: ");
-        System.out.print("Enter your tax credits: ");
 
         RUser regularUser = new RUser(fullName, email, password);
         UserDatabase.registerUser(regularUser);
@@ -48,28 +62,26 @@ public class Simplifier {
     }
 
     private static void loginUser(Scanner scanner) {
-        System.out.println("Login:");
+    System.out.println("Login:");
 
-        System.out.print("Digite seu email: ");
-        String email = scanner.nextLine();
-        System.out.print("Digite sua senha: ");
-        String password = scanner.nextLine();
+    System.out.print("Digite seu email: ");
+    String email = scanner.nextLine();
+    System.out.print("Digite sua senha: ");
+    String password = scanner.nextLine();
 
-    if (email.equals("CCT") && password.equals("2023")) {
-        Admin admin = new Admin("Admin", email, password);
-        admin.showAdminMenu();
-    } else {
-        User regularUser = UserDatabase.getUserByEmailAndPassword(email, password);
-        if (regularUser != null && regularUser instanceof RUser) {
-            RUser rUser = (RUser) regularUser;
+    User regularUser = UserDatabase.getUserByEmailAndPassword(email, password);
+
+    if (regularUser != null && regularUser instanceof RUser) {
+        RUser rUser = (RUser) regularUser;
+
+        
+        if (UserDatabase.doesUserExist(rUser.getEmail())) {
             rUser.showUserMenu(scanner);
         } else {
-            System.out.println("Login falhou. Verifique suas credenciais.");
+            System.out.println("Usuário não encontrado.");
         }
+    } else {
+        System.out.println("Login falhou. Verifique suas credenciais.");
     }
 }
 }
-    
-
-    
-

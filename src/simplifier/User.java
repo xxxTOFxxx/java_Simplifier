@@ -32,7 +32,5 @@ abstract class User {
         return password;
     }
 
-    public void showUserMenu(Scanner scanner1) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    public abstract void showUserMenu(Scanner scanner);
 }

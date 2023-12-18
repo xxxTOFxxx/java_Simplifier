@@ -19,7 +19,7 @@ class Admin extends User {
     }
 
     public void showAdminMenu() {
-        int choice = -1;
+        int choice;
         do {
             System.out.println("Welcome, Admin! Available options:");
             System.out.println("1 - View User List");
@@ -27,6 +27,8 @@ class Admin extends User {
             System.out.println("3 - Edit User");
             System.out.println("4 - Delete User");
             System.out.println("0 - Logout");
+
+            choice = getAdminChoice();
 
             try {
                 choice = Integer.parseInt(scanner.nextLine());
@@ -73,5 +75,13 @@ class Admin extends User {
         } while (choice != 0);
 
         scanner.close();
+    }
+    private int getAdminChoice() {
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return -1;
+        }
     }
 }

@@ -42,6 +42,18 @@ import java.util.Scanner;
     public void setScanner(Scanner scanner) {
         this.scanner = scanner;
     }
+    public void addDeduction() {
+    System.out.print("Enter deduction name: ");
+    String deductionName = scanner.nextLine();
+    System.out.print("Enter deduction value: ");
+    double deductionValue = scanner.nextDouble();
+
+    // Salvar a dedução no banco de dados
+    DeductionsDatabase.addDeduction(this, deductionName, deductionValue);
+
+    System.out.println("Deduction added successfully.");
+}
+    
 
     public void editProfile() {
         try {

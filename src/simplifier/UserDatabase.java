@@ -6,8 +6,6 @@
 
 package simplifier;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import simplifier.TaxCalculator;
 
 /**
  * Represents a database interaction class for user-related operations.
@@ -23,66 +22,79 @@ import java.util.Scanner;
  * @author Tiago
  */
 
-class UserDatabase {
-    private static final String DB_NAME = "java_simplifier_database";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + DB_NAME;
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
+public class UserDatabase {
+    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/java_simplifier_database";
+    private static final String DATABASE_USER = "root";
+    private static final String DATABASE_PASSWORD = "";
 
-    static Connection connect() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    public static void createUser(RUser user) {
+    try (Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
+        String insertSQL = "INSERT INTO user (email, full_name, gross_income, tax_credits) VALUES (?, ?, ROUND(?, 2), ROUND(?, 2))";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+            pstmt.setString(1, user.getEmail());
+            pstmt.setString(2, user.getFullName());
+            pstmt.setDouble(3, user.getGrossIncome());
+            pstmt.setDouble(4, user.getTaxCredits());
+            pstmt.executeUpdate();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+
+
+    public static User getUser(String email) {
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
+            String selectSQL = "SELECT full_name, email, password, type FROM user WHERE email = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(selectSQL)) {
+                pstmt.setString(1, email);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        String fullName = rs.getString("full_name");
+                        String password = rs.getString("password");
+                        String type = rs.getString("type");
+                        return new User(fullName, email, password, type);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     static void registerUser(RUser user) {
         try (Connection connection = connect()) {
-            String hashedPassword = hashPassword(user.getPassword());
             String query = "INSERT INTO user (full_name, email, password) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, user.getFullName());
                 statement.setString(2, user.getEmail());
-                statement.setString(3, hashedPassword);
+                statement.setString(3, user.getPassword());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
             handleSQLException(e);
         }
     }
-
-    private static String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Failed to hash password", e);
-        }
-    }
-
     public static boolean doesUserExist(String email) {
-    try (Connection connection = connect()) {
-        String query = "SELECT 1 FROM user WHERE email = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, email);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next();
+        try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
+            String query = "SELECT 1 FROM user WHERE email = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, email);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    return resultSet.next();
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        handleSQLException(e);
-    }
-    return false;
+        return false;
     }
     
 
-
-    public static User getUserByEmailAndPassword(String email, String password) {
-        try (Connection connection = connect()) {
+   public static RUser getUserByEmailAndPassword(String email, String password) {
+        try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
             String query = "SELECT * FROM user WHERE email = ? AND password = ?";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, email);
@@ -215,5 +227,66 @@ class UserDatabase {
         System.err.println("SQL State: " + e.getSQLState());
         System.err.println("Error Code: " + e.getErrorCode());
         e.printStackTrace();
+    }
+    
+      public static void saveTaxCalculation(TaxCalculator taxCalculation) {
+        String url = "jdbc:mysql://localhost:3306/java_simplifier"; // Use the correct database URL
+        String userDB = "root";
+        String password = ""; // Use the correct password
+
+        try (Connection connection = DriverManager.getConnection(url, userDB, password)) {
+            String insertSQL = "INSERT INTO tax_calculation (user_id, marital_status, grossIncome, net_income, income_tax, usc, prsi, deduction_name, deductions, calculation_date) "
+                                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, taxCalculation.getUserId());
+                preparedStatement.setDouble(2, taxCalculation.getIncomeTax());
+                preparedStatement.setDouble(3, taxCalculation.getUsc());
+                preparedStatement.setDouble(4, taxCalculation.getPrsi());
+                preparedStatement.setDouble(5, taxCalculation.getNetIncome());
+                preparedStatement.setDouble(6, taxCalculation.getGrossIncome());
+                preparedStatement.setString(7, taxCalculation.getDeductionName());
+                preparedStatement.setDouble(8, taxCalculation.getDeductionValue());
+                preparedStatement.setTimestamp(9, taxCalculation.getCalculationDate());
+
+                preparedStatement.executeUpdate();
+                System.out.println("Cálculo de imposto salvo no banco de dados.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<TaxCalculator> getTaxCalculations() {
+        List<TaxCalculator> taxCalculations = new ArrayList<>();
+
+        String url = "jdbc:mysql://localhost:3306/tax_calculation"; // Use the correct database URL
+        String userDB = "root";
+        String password = "password"; // Use the correct password
+
+        try (Connection connection = DriverManager.getConnection(url, userDB, password)) {
+            String query = "SELECT * FROM tax_calculation";
+            try (PreparedStatement statement = connection.prepareStatement(query);
+                 ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int userId = resultSet.getInt("user_id");
+                    double incomeTax = resultSet.getDouble("income_tax");
+                    double usc = resultSet.getDouble("usc");
+                    double prsi = resultSet.getDouble("prsi");
+                    double netIncome = resultSet.getDouble("net_income");
+                    double grossIncome = resultSet.getDouble("gross_income");
+                    String deductionName = resultSet.getString("deduction_name");
+                    double deductionValue = resultSet.getDouble("deduction_value");
+                    Timestamp calculationDate = resultSet.getTimestamp("calculation_date");
+
+                    TaxCalculator taxCalculator = new TaxCalculator(userId, incomeTax, usc, prsi, netIncome, grossIncome, deductionName, deductionValue, calculationDate);
+                    taxCalculations.add(taxCalculator);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return taxCalculations;
     }
 }
